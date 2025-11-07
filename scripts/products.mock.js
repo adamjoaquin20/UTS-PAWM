@@ -1,0 +1,46 @@
+// products.mock.js
+// NOTE: Hapus file ini saat integrasi backend.
+//   Nanti data diambil dari API.
+
+const products = [
+  { id:1, name:"Air Jordan 1 High Lost And Found", brand:"Air Jordan", category:"jordan",
+    price:2500000, originalPrice:3200000, image:"assets/products/Air Jordan 1 High Lost And Found Men.jpg",
+    material:"Leather", sizes:[40,41,42,43,44], isHot:true },
+  { id:2, name:"Air Jordan 1 Low Panda WMNS", brand:"Air Jordan", category:"jordan",
+    price:1800000, originalPrice:2200000, image:"assets/products/Air Jordan 1 Low Panda WMNS.jpg",
+    material:"Leather", sizes:[36,37,38,39,40], isHot:false },
+  { id:3, name:"Air Jordan 1 Low True Blue Navy", brand:"Air Jordan", category:"jordan",
+    price:1900000, originalPrice:2300000, image:"assets/products/Air Jordan 1 Low True Blue Navy.jpg",
+    material:"Leather", sizes:[38,39,40,41,42], isHot:false },
+  { id:4, name:"Air Jordan 1 Low Wolf Grey WMNS", brand:"Air Jordan", category:"jordan",
+    price:2000000, originalPrice:2500000, image:"assets/products/Air Jordan 1 Low Wolf Grey WMNS.jpg",
+    material:"Leather", sizes:[36,37,38,39,40], isHot:true },
+  { id:5, name:"Nike Dunk Low Black And White", brand:"Nike", category:"nike",
+    price:1200000, originalPrice:1500000, image:"assets/products/Nike Dunk Low Black And White Men.jpg",
+    material:"Leather", sizes:[39,40,41,42,43,44], isHot:true },
+  { id:6, name:"Nike Dunk Low Clear Jade", brand:"Nike", category:"nike",
+    price:1250000, originalPrice:1600000, image:"assets/products/Nike Dunk Low Clear Jade.jpg",
+    material:"Leather", sizes:[38,39,40,41,42], isHot:false },
+  { id:7, name:"Nike Dunk Low Harvest Moon", brand:"Nike", category:"nike",
+    price:1300000, originalPrice:1650000, image:"assets/products/Nike Dunk Low Harvest Moon.jpg",
+    material:"Leather", sizes:[36,37,38,39,40], isHot:false },
+  { id:8, name:"Nike Dunk Low Smoke Grey WMNS", brand:"Nike", category:"nike",
+    price:1350000, originalPrice:1700000, image:"assets/products/Nike Dunk Low Smoke Grey WMNS.jpg",
+    material:"Leather", sizes:[37,38,39,40,41], isHot:true },
+  { id:9, name:"Yeezy Slide Slate Grey", brand:"Yeezy", category:"yeezy",
+    price:900000, originalPrice:1200000, image:"assets/products/Yeezy Slide Slate Grey.jpg",
+    material:"EVA Foam", sizes:[38,39,40,41,42,43,44], isHot:true },
+];
+
+const additionalProducts = [
+  { id:10, name:"Adidas Samba OG Cloud White", brand:"Adidas", category:"adidas",
+    price:1100000, originalPrice:1450000,
+    image:"https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Nike%20Dunk%20Low%20Black%20And%20White%20Men-WVq6AxLA0fnUHUM6XCskmdhnUiCzyX.jpg",
+    material:"Leather", sizes:[36,37,38,39,40,41,42,43], isHot:false },
+];
+
+const allProducts = [...products, ...additionalProducts];
+
+window.products = products;
+window.additionalProducts = additionalProducts;
+window.allProducts = allProducts;

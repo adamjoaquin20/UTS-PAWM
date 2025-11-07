@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Detail - Autocuan Supply</title>
+  <link rel="icon" href="/assets/icon.png"/>
+  <link rel="apple-touch-icon" href="/assets/icon.png"/>
+  <meta name="theme-color" content="#000000"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a class="logo-section" href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:1rem;">
+        <img src="assets/logo.jpg" alt="Autocuan Supply" class="logo">
+        <span class="brand-name">AUTOCUAN SUPPLY</span>
+      </a>
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search products" class="search-input">
+        <button class="search-btn" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+            <circle cx="8" cy="8" r="7"></circle>
+            <path d="m13 13 4 4"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="auth-buttons">
+        <a class="btn-secondary" href="index.html">Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="breadcrumb">
+      <a class="breadcrumb-item" href="index.html">← Back to Products</a>
+    </div>
+
+    <div class="product-detail-container">
+      <div class="product-image-section">
+        <div class="image-carousel">
+          <button class="carousel-btn prev" id="prevBtn">❮</button>
+          <div class="image-display">
+            <img id="mainProductImage" src="/assets/placeholder.svg" alt="Product" class="main-image">
+            <div class="hot-badge" id="hotBadge">🔥 Hot Product</div>
+          </div>
+          <button class="carousel-btn next" id="nextBtn">❯</button>
+        </div>
+        <div class="image-dots" id="imageDots"></div>
+      </div>
+
+      <div class="product-info-section">
+        <div class="breadcrumb-detail">
+          <span id="categoryBreadcrumb">Category</span> /
+          <span id="brandBreadcrumb">Brand</span>
+        </div>
+
+        <h1 id="productTitle" class="product-title"></h1>
+
+        <div class="price-section">
+          <div class="price">
+            <span class="label">from</span>
+            <span id="productPrice" class="amount"></span>
+            <span id="originalPrice" class="original"></span>
+          </div>
+        </div>
+
+        <div class="condition-buttons">
+          <button class="condition-btn active">Brand New</button>
+          <button class="condition-btn">Used</button>
+          <button class="condition-btn">Pre-Order</button>
+        </div>
+
+        <div class="size-section">
+          <h3>Select Size</h3>
+          <div class="size-grid" id="sizeGrid"></div>
+        </div>
+
+        <div class="features-section">
+          <h3>Product Details</h3>
+          <div class="feature-item">
+            <span class="feature-label">Material:</span>
+            <span id="materialDetail"></span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Condition:</span>
+            <span id="conditionDetail"></span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-label">Authenticity:</span>
+            <span>✓ Guaranteed</span>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-add-cart">Add to Cart</button>
+          <button class="btn-checkout">Buy Now</button>
+        </div>
+
+        <div class="share-section">
+          <p>Share this product:</p>
+          <div class="share-buttons">
+            <button class="share-btn" title="Instagram">📷</button>
+            <button class="share-btn" title="Facebook">f</button>
+            <button class="share-btn" title="Twitter">𝕏</button>
+            <button class="share-btn" title="WhatsApp">💬</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>&copy; 2025 Autocuan Supply. All rights reserved. EST. 2019</p>
+    </div>
+  </footer>
+
+  <script src="/scripts/utils.js"></script>
+  <script src="/scripts/products.mock.js"></script> <!-- hapus saat sudah pakai backend -->
+  <script src="/scripts/product.js"></script>
+</body>
+</html>
