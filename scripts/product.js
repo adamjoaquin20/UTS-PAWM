@@ -1,31 +1,26 @@
-// product.js (product detail page)
-
-// Toggle ini saat sudah ada backend (contoh auto-fallback).
+// product.js (product detail page) — dengan Virtual Lab (zoom, pan, rotate, UV, flashlight)
 const USE_API = false; // set true saat backend ready
+
+let zoom = 1;
+let angle = 0;
+let uvOn = false;
+let flashOn = false;
+let isPanning = false;
+let pan = { x: 0, y: 0 };
+let panStart = { x: 0, y: 0 };
 
 document.addEventListener("DOMContentLoaded", async () => {
   const id = parseInt(getParam("id"), 10);
-  if (!id) {
-    window.location.href = "index.html";
-    return;
-  }
+  if (!id) { window.location.href = "index.html"; return; }
 
-  // data
   let product = null;
 
   if (USE_API) {
     try {
-      // contoh endpoint: /api/products/:id (silakan sesuaikan)
       const res = await fetch(`/api/products/${id}`);
-      if (res.ok) {
-        product = await res.json();
-      }
-    } catch (e) {
-      console.warn("API fetch failed, fallback to mock:", e);
-    }
+      if (res.ok) product = await res.json();
+    } catch (e) { console.warn("API fetch fail; using mock:", e); }
   }
-
-  // fallback ke mock data
   if (!product) product = (window.allProducts || []).find((p) => p.id === id);
 
   if (!product) {
@@ -36,11 +31,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   renderProduct(product);
   setupConditionButtons();
-  setupActionButtons();
+  setupActionButtons(product);
+  updateCartIndicator();
+  setupLabControls();
 });
 
 function renderProduct(product) {
-  // Info
   document.getElementById("productTitle").textContent = product.name;
   document.getElementById("productPrice").textContent = formatPrice(product.price);
   document.getElementById("originalPrice").textContent = formatPrice(product.originalPrice);
@@ -49,82 +45,162 @@ function renderProduct(product) {
   document.getElementById("categoryBreadcrumb").textContent = product.category.toUpperCase();
   document.getElementById("brandBreadcrumb").textContent = product.brand;
 
-  // Gambar utama
   const firstImage = (product.images && product.images[0]) || product.image || PLACEHOLDER;
   const imgEl = document.getElementById("mainProductImage");
   imgEl.src = firstImage;
   imgEl.onerror = () => (imgEl.src = PLACEHOLDER);
 
-  // Hot badge
   document.getElementById("hotBadge").style.display = product.isHot ? "block" : "none";
 
-  // Sizes
   const sizeGrid = document.getElementById("sizeGrid");
   sizeGrid.innerHTML = "";
-  (product.sizes || []).forEach((size) => {
+  (product.sizes || []).forEach((s) => {
     const b = document.createElement("button");
-    b.className = "size-option";
-    b.textContent = size;
+    b.className = "size-option"; b.textContent = s;
     b.addEventListener("click", function () {
-      document.querySelectorAll(".size-option").forEach((s) => s.classList.remove("selected"));
+      document.querySelectorAll(".size-option").forEach((x)=>x.classList.remove("selected"));
       this.classList.add("selected");
     });
     sizeGrid.appendChild(b);
   });
 
-  // Gallery/Carousel
   const gallery = product.images && product.images.length ? product.images : [firstImage];
   setupImageCarousel(gallery);
+  resetLab(); // init transform
 }
 
+/* ==== Carousel ==== */
 function setupImageCarousel(images) {
-  let currentImageIndex = 0;
-  const dotsContainer = document.getElementById("imageDots");
-  dotsContainer.innerHTML = "";
+  let current = 0;
+  const dots = document.getElementById("imageDots");
+  dots.innerHTML = "";
 
-  images.forEach((_, index) => {
-    const dot = document.createElement("div");
-    dot.className = `dot ${index === 0 ? "active" : ""}`;
-    dot.addEventListener("click", () => {
-      currentImageIndex = index;
-      update();
-    });
-    dotsContainer.appendChild(dot);
+  images.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = `dot ${i===0 ? "active" : ""}`;
+    d.onclick = () => { current = i; update(); resetLab(); };
+    dots.appendChild(d);
   });
 
-  function update() {
+  function update(){
     const img = document.getElementById("mainProductImage");
-    img.src = images[currentImageIndex] || PLACEHOLDER;
+    img.src = images[current] || PLACEHOLDER;
     img.onerror = () => (img.src = PLACEHOLDER);
-    document.querySelectorAll(".dot").forEach((d, idx) => d.classList.toggle("active", idx === currentImageIndex));
+    document.querySelectorAll(".dot").forEach((dot, idx) => dot.classList.toggle("active", idx===current));
   }
 
-  document.getElementById("prevBtn").onclick = () => {
-    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-    update();
-  };
-  document.getElementById("nextBtn").onclick = () => {
-    currentImageIndex = (currentImageIndex + 1) % images.length;
-    update();
-  };
-
+  document.getElementById("prevBtn").onclick = () => { current=(current-1+images.length)%images.length; update(); resetLab(); };
+  document.getElementById("nextBtn").onclick = () => { current=(current+1)%images.length; update(); resetLab(); };
   update();
 }
 
-function setupActionButtons() {
+/* ==== Action & Condition ==== */
+function setupActionButtons(product) {
   const addToCartBtn = document.querySelector(".btn-add-cart");
   const buyNowBtn = document.querySelector(".btn-checkout");
-  if (addToCartBtn) addToCartBtn.addEventListener("click", () => alert("✓ Produk telah ditambahkan ke keranjang!"));
+  if (addToCartBtn) addToCartBtn.addEventListener("click", () => {
+    try {
+      addToCart(product.id, 1);
+      showToast(`✓ ${product.name.split(" ").slice(0,3).join(" ")} ditambahkan ke keranjang`);
+      try { updateCartIndicator(); } catch(e){}
+      // small visual feedback on button
+      addToCartBtn.classList.add("added");
+      setTimeout(()=> addToCartBtn.classList.remove("added"), 700);
+    } catch (e) {
+      console.warn("add to cart failed", e);
+      alert("Gagal menambahkan ke keranjang");
+    }
+  });
   if (buyNowBtn) buyNowBtn.addEventListener("click", () => alert("Terima kasih! Anda akan diarahkan ke halaman checkout."));
 }
 
+// use shared updateCartIndicator from utils.js
 function setupConditionButtons() {
   document.querySelectorAll(".condition-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
       document.querySelectorAll(".condition-btn").forEach((b) => b.classList.remove("active"));
       this.classList.add("active");
-      const condEl = document.getElementById("conditionDetail");
-      if (condEl) condEl.textContent = this.textContent;
+      const el = document.getElementById("conditionDetail");
+      if (el) el.textContent = this.textContent;
     });
   });
 }
+
+/* ==== Virtual Lab Controls ==== */
+function setupLabControls(){
+  const img = document.getElementById("mainProductImage");
+  const stage = document.getElementById("imageDisplay");
+  const flashlight = document.getElementById("flashlight");
+
+  // zoom buttons
+  document.getElementById("zoomInBtn").onclick = () => { zoom = clamp(zoom + 0.2, 1, 4); applyTransform(img); };
+  document.getElementById("zoomOutBtn").onclick = () => { zoom = clamp(zoom - 0.2, 1, 4); applyTransform(img); };
+
+  // rotate
+  document.getElementById("rotateBtn").onclick = () => { angle = (angle + 15) % 360; applyTransform(img); };
+
+  // UV filter
+  document.getElementById("uvBtn").onclick = () => {
+    uvOn = !uvOn;
+    img.style.filter = uvOn ? "hue-rotate(180deg) saturate(1.4) contrast(1.15)" : "none";
+  };
+
+  // flashlight
+  document.getElementById("flashBtn").onclick = () => {
+    flashOn = !flashOn;
+    flashlight.classList.toggle("active", flashOn);
+  };
+  stage.addEventListener("mousemove", (e) => {
+    if (!flashOn) return;
+    const rect = stage.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    flashlight.style.setProperty("--mx", `${x}%`);
+    flashlight.style.setProperty("--my", `${y}%`);
+  });
+
+  // wheel zoom
+  stage.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.15 : 0.15;
+    zoom = clamp(zoom + delta, 1, 4);
+    applyTransform(img);
+  }, { passive:false });
+
+  // pan (drag image)
+  stage.addEventListener("pointerdown", (e) => {
+    isPanning = true;
+    panStart = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+    stage.setPointerCapture(e.pointerId);
+    stage.style.cursor = "grabbing";
+  });
+  stage.addEventListener("pointermove", (e) => {
+    if (!isPanning) return;
+    pan.x = e.clientX - panStart.x;
+    pan.y = e.clientY - panStart.y;
+    applyTransform(img);
+  });
+  stage.addEventListener("pointerup", (e) => {
+    isPanning = false;
+    stage.releasePointerCapture(e.pointerId);
+    stage.style.cursor = "default";
+  });
+
+  // reset
+  document.getElementById("resetLabBtn").onclick = resetLab;
+}
+
+function applyTransform(img){
+  img.style.transform = `translate(${pan.x}px, ${pan.y}px) scale(${zoom}) rotate(${angle}deg)`;
+}
+function resetLab(){
+  zoom = 1; angle = 0; pan = {x:0,y:0}; uvOn = false; flashOn = false;
+  const img = document.getElementById("mainProductImage");
+  const flashlight = document.getElementById("flashlight");
+  img.style.filter = "none";
+  flashlight.classList.remove("active");
+  applyTransform(img);
+}
+
+/* utils kecil */
+function clamp(v,min,max){ return Math.min(max, Math.max(min, v)); }

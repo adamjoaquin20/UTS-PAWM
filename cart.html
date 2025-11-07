@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Keranjang - Autocuan Supply</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a class="logo-section" href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:1rem;">
+        <img src="assets/logo.jpg" alt="Autocuan Supply" class="logo">
+        <span class="brand-name">AUTOCUAN SUPPLY</span>
+      </a>
+      <div style="flex:1"></div>
+      <div class="auth-buttons">
+        <a class="btn-secondary" href="index.html">Home</a>
+        <a id="cartIndicator" class="btn-secondary" href="cart.html">Keranjang (<span id="cartCount">0</span>)</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section style="padding:2rem;">
+      <h2>Keranjang Anda</h2>
+      <div id="cartContents" style="margin-top:1rem;"></div>
+      <div id="cartEmpty" style="color:#777; margin-top:1rem; display:none;">Keranjang kosong.</div>
+      <div style="margin-top:1.5rem;">
+        <a id="checkoutBtn" class="btn-primary" href="#">Checkout</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>&copy; 2025 Autocuan Supply. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/scripts/utils.js"></script>
+  <script src="/scripts/products.mock.js"></script>
+  <script src="/scripts/cart.js"></script>
+</body>
+</html>

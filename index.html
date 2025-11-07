@@ -41,6 +41,9 @@
       <div class="auth-buttons">
         <button class="btn-secondary" id="loginBtn">Login</button>
         <button class="btn-primary" id="registerBtn">Register</button>
+        <a id="cartIndicator" class="btn-secondary" href="cart.html" title="Lihat Keranjang" style="margin-left:.5rem">
+          Keranjang (<span id="cartCount">0</span>)
+        </a>
       </div>
     </div>
   </header>
@@ -56,6 +59,8 @@
       <button class="category-btn" data-filter="crocs">Crocs</button>
     </div>
   </nav>
+
+
 
   <!-- Promo -->
   <section class="promo-banner">
@@ -103,6 +108,28 @@
     </div>
   </div>
 
+  <!-- === Lab Dock (Drag & Drop) === -->
+<section class="lab-dock">
+  <div id="cartDock" class="dock-zone">
+    <div class="dock-head">
+      <h4>🛒 Cart Dock</h4>
+      <small>Drag kartu produk ke sini</small>
+    </div>
+    <div id="cartDockList" class="chip-list"></div>
+  </div>
+
+  <div id="compareTray" class="dock-zone">
+    <div class="dock-head">
+      <h4>⚖️ Compare Tray (maks 2)</h4>
+      <small>Drag 2 produk untuk dibandingkan</small>
+    </div>
+    <div id="compareList" class="chip-list"></div>
+    <!-- (opsional) tombol menuju halaman compare -->
+    <!-- <a id="compareBtn" class="btn-secondary" href="compare.html">Compare</a> -->
+  </div>
+</section>
+
+
   <footer class="footer">
     <!-- ... (footer kamu tetap) ... -->
     <div class="footer-bottom">
@@ -114,5 +141,7 @@
   <script src="/scripts/utils.js"></script>
   <script src="/scripts/products.mock.js"></script> <!-- hapus saat sudah pakai backend -->
   <script src="/scripts/main.js"></script>
+  <!-- toast container (if utils.showToast not yet created it will be created dynamically) -->
+  <div id="toastContainer" aria-live="polite" style="position:fixed;right:1rem;bottom:1rem;z-index:9999"></div>
 </body>
 </html>
