@@ -1,7 +1,9 @@
 // main.js (index page) — dengan Drag & Drop Dock
 let currentFilter = "all";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // if frontend provided API_BASE, try to fetch products from backend first
+  try { await loadProducts(); } catch (e) { /* ignore */ }
   renderProducts();
   setupEventListeners();
   setupDockDroppables();
@@ -10,6 +12,25 @@ document.addEventListener("DOMContentLoaded", () => {
   try { updateCartIndicator(); } catch (e) {}
   setTimeout(hideSplash, 300);
 });
+
+async function loadProducts(){
+  const apiBase = (window && window.API_BASE) ? String(window.API_BASE).replace(/\/$/, '') : null;
+  if (!apiBase) return; // nothing to do
+  try {
+    const res = await fetch(`${apiBase}/api/products`);
+    if (!res.ok) { console.warn('Products API responded', res.status); return; }
+    const data = await res.json();
+    if (Array.isArray(data) && data.length) {
+      // ensure global variable used by other scripts is updated
+      window.allProducts = data;
+      // keep also window.products for compatibility if needed
+      window.products = data.slice(0, 6);
+      window.additionalProducts = data.slice(6);
+    }
+  } catch (e) {
+    console.warn('Failed to fetch products from API', e);
+  }
+}
 
 function setupEventListeners() {
   // kategori

@@ -138,6 +138,12 @@
   </footer>
 
   <!-- Scripts -->
+  <script>
+    // Default API base for local development. Change before deploying frontend.
+    // When hosting frontend separately, set this to your backend URL (e.g. https://api.example.com)
+    // For security, do NOT hard-code Supabase service keys into the frontend. Use the backend as a proxy.
+    window.API_BASE = window.API_BASE || 'http://localhost:3000';
+  </script>
   <script src="/scripts/utils.js"></script>
   <script src="/scripts/products.mock.js"></script> <!-- hapus saat sudah pakai backend -->
   <script src="/scripts/main.js"></script>

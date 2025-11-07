@@ -25,29 +25,50 @@ function getCompare(){ return JSON.parse(localStorage.getItem(COMPARE_KEY) || "[
 function setCompare(v){ localStorage.setItem(COMPARE_KEY, JSON.stringify(v)); }
 
 // cart helpers that work with {id, qty} entries
-function addToCart(productId, qty = 1) {
+function addToCart(productId, qty = 1, opts = {}) {
   const cart = getCart();
-  const existing = cart.find((c) => c.id === productId);
+  // match by id + options (size, condition) if provided
+  const match = (entry) => {
+    if (entry.id !== productId) return false;
+    if (!opts) return true;
+    // compare selected fields
+    const s1 = opts.size || entry.size || '';
+    const s2 = entry.size || '';
+    const c1 = opts.condition || entry.condition || '';
+    const c2 = entry.condition || '';
+    return s1 === s2 && c1 === c2;
+  };
+  const existing = cart.find(match);
   if (existing) existing.qty = Math.max(1, existing.qty + qty);
-  else cart.push({ id: productId, qty: Math.max(1, qty) });
+  else cart.push(Object.assign({ id: productId, qty: Math.max(1, qty) }, opts));
   setCart(cart);
   // notify other windows
   try { window.dispatchEvent(new Event('storage')); } catch(e){}
   return cart;
 }
 
-function removeFromCart(productId){
-  const cart = getCart().filter(c => c.id !== productId);
+function removeFromCart(productId, opts = null){
+  const cart = getCart().filter(c => {
+    if (c.id !== productId) return true;
+    if (!opts) return false; // remove all entries with this id
+    const s = opts.size || '';
+    const cond = opts.condition || '';
+    return !(String(c.size || '') === String(s) && String(c.condition || '') === String(cond));
+  });
   setCart(cart);
   try { window.dispatchEvent(new Event('storage')); } catch(e){}
   return cart;
 }
 
-function setCartQty(productId, qty){
+function setCartQty(productId, qty, opts = null){
   const cart = getCart();
-  const idx = cart.findIndex(c => c.id === productId);
+  const idx = cart.findIndex(c => {
+    if (c.id !== productId) return false;
+    if (!opts) return true;
+    return String(c.size || '') === String(opts.size || '') && String(c.condition || '') === String(opts.condition || '');
+  });
   if (idx === -1) {
-    if (qty > 0) cart.push({ id: productId, qty });
+    if (qty > 0) cart.push(Object.assign({ id: productId, qty }, opts || {}));
   } else {
     if (qty > 0) cart[idx].qty = qty; else cart.splice(idx,1);
   }

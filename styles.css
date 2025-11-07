@@ -638,6 +638,24 @@ body {
   color: var(--primary-gold);
 }
 
+/* disabled state for add-to-cart when size/condition not selected */
+.btn-add-cart.disabled,
+.btn-add-cart[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  color: var(--text-gray);
+  border-color: var(--border-color);
+}
+
+/* brief added state feedback */
+.btn-add-cart.added {
+  box-shadow: 0 6px 18px rgba(39,174,96,0.14);
+  border-color: var(--success-green);
+  color: var(--success-green);
+}
+
 .share-section {
   padding-top: 2rem;
   border-top: 1px solid var(--border-color);

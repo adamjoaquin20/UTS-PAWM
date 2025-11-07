@@ -27,13 +27,15 @@ function renderCartPage(){
     row.style.display = 'flex'; row.style.alignItems = 'center'; row.style.gap = '1rem'; row.style.padding = '.6rem 0';
 
     const img = document.createElement('img'); img.src = p.image || '/assets/placeholder.svg'; img.style.width = '64px'; img.style.height = '64px'; img.style.objectFit='cover';
-    const info = document.createElement('div');
-    info.innerHTML = `<div style="font-weight:600">${p.name}</div><div style="color:#666">${formatPrice(p.price)}</div>`;
+  const info = document.createElement('div');
+  const sizeText = entry.size ? `<div style="color:#444">Size: ${entry.size}</div>` : '';
+  const condText = entry.condition ? `<div style="color:#444">Condition: ${entry.condition}</div>` : '';
+  info.innerHTML = `<div style="font-weight:600">${p.name}</div><div style="color:#666">${formatPrice(p.price)}</div>${sizeText}${condText}`;
     const qtyWrap = document.createElement('div'); qtyWrap.style.display='flex'; qtyWrap.style.alignItems='center'; qtyWrap.style.gap='.4rem';
     const qtyInput = document.createElement('input'); qtyInput.type='number'; qtyInput.min='1'; qtyInput.value = qty; qtyInput.style.width='64px';
     qtyInput.addEventListener('change', (e) => {
       const v = Math.max(1, parseInt(e.target.value || '1', 10));
-      setCartQty(id, v);
+      setCartQty(id, v, { size: entry.size, condition: entry.condition });
       renderCartPage();
       try { updateCartIndicator(); } catch(e){}
     });
@@ -41,7 +43,7 @@ function renderCartPage(){
     const actions = document.createElement('div');
     actions.style.marginLeft = 'auto';
     const remove = document.createElement('button'); remove.className = 'btn-secondary'; remove.textContent = 'Hapus';
-    remove.onclick = () => { removeFromCart(id); renderCartPage(); try{ updateCartIndicator(); }catch(e){} };
+  remove.onclick = () => { removeFromCart(id, { size: entry.size, condition: entry.condition }); renderCartPage(); try{ updateCartIndicator(); }catch(e){} };
     const view = document.createElement('a'); view.className='btn-view'; view.href = `product.html?id=${p.id}`; view.textContent = 'Lihat'; view.style.marginLeft = '.6rem';
 
     qtyWrap.appendChild(qtyInput);

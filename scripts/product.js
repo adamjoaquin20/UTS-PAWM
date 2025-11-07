@@ -1,5 +1,5 @@
 // product.js (product detail page) — dengan Virtual Lab (zoom, pan, rotate, UV, flashlight)
-const USE_API = false; // set true saat backend ready
+// If window.API_BASE is set (e.g. http://localhost:3000), the frontend will request product data from the backend.
 
 let zoom = 1;
 let angle = 0;
@@ -15,9 +15,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let product = null;
 
-  if (USE_API) {
+  const apiBase = (window && window.API_BASE) ? String(window.API_BASE).replace(/\/$/, '') : null;
+  if (apiBase) {
     try {
-      const res = await fetch(`/api/products/${id}`);
+      const res = await fetch(`${apiBase}/api/products/${id}`);
       if (res.ok) product = await res.json();
     } catch (e) { console.warn("API fetch fail; using mock:", e); }
   }
@@ -60,6 +61,8 @@ function renderProduct(product) {
     b.addEventListener("click", function () {
       document.querySelectorAll(".size-option").forEach((x)=>x.classList.remove("selected"));
       this.classList.add("selected");
+      // enable add-to-cart when a size is selected
+      try { updateAddButtonState(); } catch(e){}
     });
     sizeGrid.appendChild(b);
   });
@@ -67,6 +70,26 @@ function renderProduct(product) {
   const gallery = product.images && product.images.length ? product.images : [firstImage];
   setupImageCarousel(gallery);
   resetLab(); // init transform
+}
+
+// enable/disable Add to Cart based on whether a size was selected (if sizes exist)
+function updateAddButtonState(){
+  try {
+    const addBtn = document.querySelector('.btn-add-cart');
+    if (!addBtn) return;
+    const sizeOptions = document.querySelectorAll('.size-option');
+    const condSelected = !!document.querySelector('.condition-btn.active');
+    if (!sizeOptions || sizeOptions.length === 0) {
+      // if no sizes, require condition selection only
+      addBtn.disabled = !condSelected;
+      addBtn.classList.toggle('disabled', !condSelected);
+      return;
+    }
+    const selected = document.querySelector('.size-option.selected');
+    const shouldEnable = !!selected && condSelected;
+    addBtn.disabled = !shouldEnable;
+    addBtn.classList.toggle('disabled', !shouldEnable);
+  } catch (e) { /* ignore */ }
 }
 
 /* ==== Carousel ==== */
@@ -98,9 +121,27 @@ function setupImageCarousel(images) {
 function setupActionButtons(product) {
   const addToCartBtn = document.querySelector(".btn-add-cart");
   const buyNowBtn = document.querySelector(".btn-checkout");
+  // initialize add button state (disabled if sizes exist and none selected)
+  try { updateAddButtonState(); } catch(e){}
   if (addToCartBtn) addToCartBtn.addEventListener("click", () => {
     try {
-      addToCart(product.id, 1);
+      // collect selected size and condition from UI
+      const sizeEl = document.querySelector('.size-option.selected');
+      const condEl = document.querySelector('.condition-btn.active');
+      const selectedSize = sizeEl ? sizeEl.textContent.trim() : null;
+      const selectedCondition = condEl ? condEl.textContent.trim() : 'Brand New';
+      // if sizes exist but none selected, or condition not selected, prevent adding
+      const sizeOptions = document.querySelectorAll('.size-option');
+      const condSelected = !!condEl;
+      if ((sizeOptions && sizeOptions.length > 0 && !selectedSize) || !condSelected) {
+        if (!selectedSize && !condSelected) showToast('Pilih ukuran & kondisi terlebih dahulu');
+        else if (!selectedSize) showToast('Pilih ukuran terlebih dahulu');
+        else showToast('Pilih kondisi produk terlebih dahulu');
+        // small attention animation
+        try { document.getElementById('sizeGrid').animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-6px)' }, { transform: 'translateY(0)' }], { duration: 220 }); } catch(e){}
+        return;
+      }
+      addToCart(product.id, 1, { size: selectedSize, condition: selectedCondition });
       showToast(`✓ ${product.name.split(" ").slice(0,3).join(" ")} ditambahkan ke keranjang`);
       try { updateCartIndicator(); } catch(e){}
       // small visual feedback on button
