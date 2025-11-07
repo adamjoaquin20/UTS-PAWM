@@ -1,0 +1,8 @@
+# Ignore environment file with secrets
+.env
+
+# node modules
+node_modules/
+
+# DB file
+db/products.db
