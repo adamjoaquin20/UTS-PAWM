@@ -4,13 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autocuan Supply - Premium Sneaker Marketplace</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- ICON/FAVICON (app icon di web) -->
+    <link rel="icon" href="/assets/icon.png" />
+    <link rel="apple-touch-icon" href="/assets/icon.png" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+    <!-- SPLASH (WEB) -->
+    <div id="splash">
+        <div class="splash-inner">
+            <img src="/assets/icon.png" alt="Autocuan Supply" class="splash-logo" />
+            <h1 class="splash-title"><span class="gold">AUTOCUAN</span> SUPPLY</h1>
+            <p class="splash-tagline">Authentic Sneakers Guaranteed • Since 2019</p>
+            <div class="splash-loader" aria-label="Loading"></div>
+        </div>
+    </div>
+
     <!-- Navigation Header -->
     <header class="header">
         <div class="header-container">
-            <div class="logo-section">
+            <div class="logo-section" onclick="switchPage('homePage')" style="cursor: pointer;">
                 <img src="assets/logo.jpg" alt="Autocuan Supply" class="logo">
                 <span class="brand-name">AUTOCUAN SUPPLY</span>
             </div>

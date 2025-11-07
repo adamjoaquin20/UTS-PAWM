@@ -874,3 +874,65 @@ body {
     flex-direction: column;
   }
 }
+
+/* ====== SPLASH (WEB) ====== */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #f5f5f5;
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  transition: opacity 300ms ease;
+}
+
+#splash.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-inner {
+  text-align: center;
+  padding: 24px;
+}
+
+.splash-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.splash-title {
+  letter-spacing: 1px;
+  font-size: 28px;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+
+.splash-title .gold { color: #f4a020; }
+
+.splash-tagline {
+  color: #b0b0b0;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* simple loader */
+.splash-loader {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #333;
+  border-top-color: #f4a020;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Optional: product images lazy fallback */
+.product-image {
+  background: #111;
+}

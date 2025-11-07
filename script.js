@@ -1,4 +1,5 @@
-// Product Data
+const PLACEHOLDER = "/assets/placeholder.svg";
+
 const products = [
   {
     id: 1,
@@ -108,10 +109,8 @@ const products = [
     sizes: [38, 39, 40, 41, 42, 43, 44],
     isHot: true,
   },
-]
+];
 
-
-// Add more products for variety
 const additionalProducts = [
   {
     id: 10,
@@ -126,277 +125,272 @@ const additionalProducts = [
     sizes: [36, 37, 38, 39, 40, 41, 42, 43],
     isHot: false,
   },
-]
+];
 
-const allProducts = [...products, ...additionalProducts]
-let currentFilter = "all"
-let currentProductId = null
+const allProducts = [...products, ...additionalProducts];
+let currentFilter = "all";
+let currentProductId = null;
 
-// Format Price IDR
+// ---- Utils ----
 function formatPrice(price) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     minimumFractionDigits: 0,
-  }).format(price)
+  }).format(price);
 }
 
-// Initialize
-document.addEventListener("DOMContentLoaded", () => {
-  renderProducts()
-  setupEventListeners()
-})
+function hideSplash() {
+  const s = document.getElementById("splash");
+  if (s) s.classList.add("hidden");
+}
 
-// Setup Event Listeners
+// ---- Init ----
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts();
+  setupEventListeners();
+  setupBackButton();
+  setupActionButtons();
+  setupConditionButtons();
+
+  // Tutup splash setelah rendering awal
+  setTimeout(hideSplash, 300);
+});
+
+// ---- Event Listeners ----
 function setupEventListeners() {
   // Category filter
   document.querySelectorAll(".category-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
-      document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"))
-      this.classList.add("active")
-      currentFilter = this.dataset.filter
-      renderProducts()
-    })
-  })
+      document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
+      this.classList.add("active");
+      currentFilter = this.dataset.filter;
+      renderProducts();
+    });
+  });
+
+  // Logo click → back to home
+    const logo = document.querySelector(".logo");
+    const brand = document.querySelector(".brand-name");
+
+    if (logo) logo.addEventListener("click", () => switchPage("homePage"));
+    if (brand) brand.addEventListener("click", () => switchPage("homePage"));
 
   // Search
-  document.getElementById("searchInput").addEventListener("input", (e) => {
-    filterBySearch(e.target.value)
-  })
+  const searchEl = document.getElementById("searchInput");
+  if (searchEl) {
+    searchEl.addEventListener("input", (e) => filterBySearch(e.target.value));
+  }
 
   // Auth buttons
-  document.getElementById("loginBtn").addEventListener("click", () => {
-    document.getElementById("loginModal").classList.add("active")
-  })
+  const loginBtn = document.getElementById("loginBtn");
+  const registerBtn = document.getElementById("registerBtn");
+  const loginModal = document.getElementById("loginModal");
+  const registerModal = document.getElementById("registerModal");
 
-  document.getElementById("registerBtn").addEventListener("click", () => {
-    document.getElementById("registerModal").classList.add("active")
-  })
+  if (loginBtn && loginModal) loginBtn.addEventListener("click", () => loginModal.classList.add("active"));
+  if (registerBtn && registerModal) registerBtn.addEventListener("click", () => registerModal.classList.add("active"));
 
-  // Modal close
-  document.getElementById("closeLoginModal").addEventListener("click", () => {
-    document.getElementById("loginModal").classList.remove("active")
-  })
-
-  document.getElementById("closeRegisterModal").addEventListener("click", () => {
-    document.getElementById("registerModal").classList.remove("active")
-  })
+  const closeLogin = document.getElementById("closeLoginModal");
+  const closeRegister = document.getElementById("closeRegisterModal");
+  if (closeLogin) closeLogin.addEventListener("click", () => loginModal.classList.remove("active"));
+  if (closeRegister) closeRegister.addEventListener("click", () => registerModal.classList.remove("active"));
 
   // Modal forms
-  document.getElementById("loginForm").addEventListener("submit", (e) => {
-    e.preventDefault()
-    alert("Login berhasil! Terima kasih telah menggunakan Autocuan Supply.")
-    document.getElementById("loginModal").classList.remove("active")
-  })
-
-  document.getElementById("registerForm").addEventListener("submit", (e) => {
-    e.preventDefault()
-    alert("Registrasi berhasil! Silakan login untuk melanjutkan.")
-    document.getElementById("registerModal").classList.remove("active")
-  })
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  if (loginForm)
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Login berhasil! Terima kasih telah menggunakan Autocuan Supply.");
+      loginModal.classList.remove("active");
+    });
+  if (registerForm)
+    registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Registrasi berhasil! Silakan login untuk melanjutkan.");
+      registerModal.classList.remove("active");
+    });
 
   // Close modals on outside click
   document.querySelectorAll(".modal").forEach((modal) => {
     modal.addEventListener("click", function (e) {
-      if (e.target === this) {
-        this.classList.remove("active")
-      }
-    })
-  })
+      if (e.target === this) this.classList.remove("active");
+    });
+  });
 }
 
-// Render Products
-function renderProducts() {
-  const filteredProducts =
-    currentFilter === "all" ? allProducts : allProducts.filter((p) => p.category === currentFilter)
+function setupBackButton() {
+  const backBtn = document.getElementById("backBtn");
+  if (backBtn) backBtn.addEventListener("click", () => switchPage("homePage"));
+}
 
-  const grid = document.getElementById("productGrid")
-  grid.innerHTML = ""
+function setupActionButtons() {
+  const addToCartBtn = document.querySelector(".btn-add-cart");
+  const buyNowBtn = document.querySelector(".btn-checkout");
+  if (addToCartBtn) addToCartBtn.addEventListener("click", () => alert("✓ Produk telah ditambahkan ke keranjang!"));
+  if (buyNowBtn) buyNowBtn.addEventListener("click", () => alert("Terima kasih! Anda akan diarahkan ke halaman checkout."));
+}
+
+function setupConditionButtons() {
+  document.querySelectorAll(".condition-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".condition-btn").forEach((b) => b.classList.remove("active"));
+      this.classList.add("active");
+      const condEl = document.getElementById("conditionDetail");
+      if (condEl) condEl.textContent = this.textContent;
+    });
+  });
+}
+
+// ---- Render Grid ----
+function renderProducts() {
+  const filteredProducts = currentFilter === "all" ? allProducts : allProducts.filter((p) => p.category === currentFilter);
+
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
 
   filteredProducts.forEach((product) => {
-    const card = document.createElement("div")
-    card.className = "product-card"
+    const card = document.createElement("div");
+    card.className = "product-card";
     card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image">
-            <div class="product-body">
-                <div class="product-brand">${product.brand}</div>
-                <div class="product-name">${product.name}</div>
-                <div class="product-price">${formatPrice(product.price)}</div>
-                <button class="btn-view">View Details</button>
-            </div>
-        `
-
-    card.addEventListener("click", () => {
-      showProductDetail(product.id)
-    })
-
-    grid.appendChild(card)
-  })
+      <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy"
+           onerror="this.onerror=null;this.src='${PLACEHOLDER}';">
+      <div class="product-body">
+        <div class="product-brand">${product.brand}</div>
+        <div class="product-name">${product.name}</div>
+        <div class="product-price">${formatPrice(product.price)}</div>
+        <button class="btn-view">View Details</button>
+      </div>
+    `;
+    card.addEventListener("click", () => showProductDetail(product.id));
+    grid.appendChild(card);
+  });
 }
 
-// Filter by Search
+// ---- Search ----
 function filterBySearch(searchTerm) {
   const filtered = allProducts.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.brand.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      p.brand.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const grid = document.getElementById("productGrid")
-  grid.innerHTML = ""
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
 
   if (filtered.length === 0) {
     grid.innerHTML =
-      '<p style="grid-column: 1/-1; text-align: center; color: #B0B0B0; padding: 2rem;">Produk tidak ditemukan</p>'
-    return
-  }
+      '<p style="grid-column: 1/-1; text-align: center; color: #B0B0B0; padding: 2rem;">Produk tidak ditemukan</p>';
+    return;
+    }
 
   filtered.forEach((product) => {
-    const card = document.createElement("div")
-    card.className = "product-card"
+    const card = document.createElement("div");
+    card.className = "product-card";
     card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image">
-            <div class="product-body">
-                <div class="product-brand">${product.brand}</div>
-                <div class="product-name">${product.name}</div>
-                <div class="product-price">${formatPrice(product.price)}</div>
-                <button class="btn-view">View Details</button>
-            </div>
-        `
-
-    card.addEventListener("click", () => {
-      showProductDetail(product.id)
-    })
-
-    grid.appendChild(card)
-  })
+      <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy"
+           onerror="this.onerror=null;this.src='${PLACEHOLDER}';">
+      <div class="product-body">
+        <div class="product-brand">${product.brand}</div>
+        <div class="product-name">${product.name}</div>
+        <div class="product-price">${formatPrice(product.price)}</div>
+        <button class="btn-view">View Details</button>
+      </div>
+    `;
+    card.addEventListener("click", () => showProductDetail(product.id));
+    grid.appendChild(card);
+  });
 }
 
-// Show Product Detail
+// ---- Detail Page ----
 function showProductDetail(productId) {
-  currentProductId = productId
-  const product = allProducts.find((p) => p.id === productId)
+  currentProductId = productId;
+  const product = allProducts.find((p) => p.id === productId);
+  if (!product) return;
 
-  if (!product) return
+  // Info
+  document.getElementById("productTitle").textContent = product.name;
+  document.getElementById("productPrice").textContent = formatPrice(product.price);
+  document.getElementById("originalPrice").textContent = formatPrice(product.originalPrice);
+  document.getElementById("materialDetail").textContent = product.material;
+  document.getElementById("conditionDetail").textContent = "Brand New";
+  document.getElementById("categoryBreadcrumb").textContent = product.category.toUpperCase();
+  document.getElementById("brandBreadcrumb").textContent = product.brand;
 
-  // Update info
-  document.getElementById("productTitle").textContent = product.name
-  document.getElementById("productPrice").textContent = formatPrice(product.price)
-  document.getElementById("originalPrice").textContent = formatPrice(product.originalPrice)
-  document.getElementById("materialDetail").textContent = product.material
-  document.getElementById("conditionDetail").textContent = "Brand New"
-  document.getElementById("categoryBreadcrumb").textContent = product.category.toUpperCase()
-  document.getElementById("brandBreadcrumb").textContent = product.brand
+  // Gambar utama + fallback
+  const firstImage = (product.images && product.images[0]) || product.image || PLACEHOLDER;
+  const imgEl = document.getElementById("mainProductImage");
+  imgEl.src = firstImage;
+  imgEl.onerror = () => (imgEl.src = PLACEHOLDER);
 
-  // Update image
-  const firstImage = (product.images && product.images[0]) || product.image || "/assets/placeholder.svg"
-  document.getElementById("mainProductImage").src = firstImage
+  // Hot badge
+  document.getElementById("hotBadge").style.display = product.isHot ? "block" : "none";
 
-  // Update hot badge
-  document.getElementById("hotBadge").style.display = product.isHot ? "block" : "none"
-
-  // Render sizes
-  const sizeGrid = document.getElementById("sizeGrid")
-  sizeGrid.innerHTML = ""
+  // Sizes
+  const sizeGrid = document.getElementById("sizeGrid");
+  sizeGrid.innerHTML = "";
   product.sizes.forEach((size) => {
-    const sizeBtn = document.createElement("button")
-    sizeBtn.className = "size-option"
-    sizeBtn.textContent = size
+    const sizeBtn = document.createElement("button");
+    sizeBtn.className = "size-option";
+    sizeBtn.textContent = size;
     sizeBtn.addEventListener("click", function () {
-      document.querySelectorAll(".size-option").forEach((s) => s.classList.remove("selected"))
-      this.classList.add("selected")
-    })
-    sizeGrid.appendChild(sizeBtn)
-  })
+      document.querySelectorAll(".size-option").forEach((s) => s.classList.remove("selected"));
+      this.classList.add("selected");
+    });
+    sizeGrid.appendChild(sizeBtn);
+  });
 
-  // Setup carousel
-  setupImageCarousel(product.images && product.images.length ? product.images : [firstImage])
+  // Carousel (pakai product.images jika ada)
+  const gallery = product.images && product.images.length ? product.images : [firstImage];
+  setupImageCarousel(gallery);
 
-  // Switch to detail page
-  switchPage("productPage")
+  // Switch page
+  switchPage("productPage");
 }
 
-// Setup Image Carousel
+// ---- Carousel ----
 function setupImageCarousel(images) {
-  let currentImageIndex = 0
+  let currentImageIndex = 0;
 
-  const dotsContainer = document.getElementById("imageDots")
-  dotsContainer.innerHTML = ""
+  const dotsContainer = document.getElementById("imageDots");
+  dotsContainer.innerHTML = "";
 
   images.forEach((_, index) => {
-    const dot = document.createElement("div")
-    dot.className = `dot ${index === 0 ? "active" : ""}`
+    const dot = document.createElement("div");
+    dot.className = `dot ${index === 0 ? "active" : ""}`;
     dot.addEventListener("click", () => {
-      currentImageIndex = index
-      updateCarousel()
-    })
-    dotsContainer.appendChild(dot)
-  })
+      currentImageIndex = index;
+      updateCarousel();
+    });
+    dotsContainer.appendChild(dot);
+  });
 
   function updateCarousel() {
-    document.getElementById("mainProductImage").src = images[currentImageIndex]
+    const img = document.getElementById("mainProductImage");
+    img.src = images[currentImageIndex] || PLACEHOLDER;
+    img.onerror = () => (img.src = PLACEHOLDER);
     document.querySelectorAll(".dot").forEach((dot, idx) => {
-      dot.classList.toggle("active", idx === currentImageIndex)
-    })
+      dot.classList.toggle("active", idx === currentImageIndex);
+    });
   }
 
   document.getElementById("prevBtn").onclick = () => {
-    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length
-    updateCarousel()
-  }
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    updateCarousel();
+  };
 
   document.getElementById("nextBtn").onclick = () => {
-    currentImageIndex = (currentImageIndex + 1) % images.length
-    updateCarousel()
-  }
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    updateCarousel();
+  };
+
+  updateCarousel();
 }
 
-// Switch Page
+// ---- Switch Pages ----
 function switchPage(pageName) {
-  document.querySelectorAll(".page-view").forEach((page) => {
-    page.classList.remove("active")
-  })
-  document.getElementById(pageName).classList.add("active")
-
-  // Scroll to top
-  window.scrollTo(0, 0)
+  document.querySelectorAll(".page-view").forEach((page) => page.classList.remove("active"));
+  document.getElementById(pageName).classList.add("active");
+  window.scrollTo(0, 0);
 }
-
-// Back to Products
-document.addEventListener("DOMContentLoaded", () => {
-  const backBtn = document.getElementById("backBtn")
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      switchPage("homePage")
-    })
-  }
-})
-
-// Add to Cart & Buy Now handlers
-document.addEventListener("DOMContentLoaded", () => {
-  const addToCartBtn = document.querySelector(".btn-add-cart")
-  const buyNowBtn = document.querySelector(".btn-checkout")
-
-  if (addToCartBtn) {
-    addToCartBtn.addEventListener("click", () => {
-      alert("✓ Produk telah ditambahkan ke keranjang!")
-    })
-  }
-
-  if (buyNowBtn) {
-    buyNowBtn.addEventListener("click", () => {
-      alert("Terima kasih! Anda akan diarahkan ke halaman checkout.")
-    })
-  }
-})
-
-// Condition button handler
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".condition-btn").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      document.querySelectorAll(".condition-btn").forEach((b) => b.classList.remove("active"))
-      this.classList.add("active")
-      document.getElementById("conditionDetail").textContent = this.textContent
-    })
-  })
-})
