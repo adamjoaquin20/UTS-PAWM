@@ -1,12 +1,40 @@
-import { API_BASE } from '@/constants/config';
+import { API_BASE, SUPABASE_URL, SUPABASE_ANON_KEY, IS_SUPABASE_CONFIGURED } from '@/constants/config';
 import { Product, CartItem, ApiResponse } from '@/types';
+import { supabase } from './supabase';
 
-// Fetch all products
+// Fetch all products - try Supabase first, then API
 export const fetchProducts = async (): Promise<Product[]> => {
+  // Try Supabase directly if configured
+  if (IS_SUPABASE_CONFIGURED && supabase) {
+    try {
+      const { data, error } = await supabase.from('products').select('*');
+      if (!error && data) {
+        console.log('Fetched products from Supabase:', data.length);
+        return data.map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          brand: r.brand,
+          category: r.category,
+          price: r.price,
+          originalPrice: r.originalPrice,
+          image: r.image,
+          material: r.material,
+          sizes: r.sizes || [],
+          isHot: !!r.isHot,
+          description: r.description || ''
+        }));
+      }
+    } catch (e) {
+      console.log('Supabase fetch failed, trying API...', e);
+    }
+  }
+
+  // Fallback to API
   try {
     const response = await fetch(`${API_BASE}/api/products`);
     if (!response.ok) throw new Error('Failed to fetch products');
     const data = await response.json();
+    console.log('Fetched products from API:', data.length);
     return data;
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -16,6 +44,31 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
 // Fetch single product by ID
 export const fetchProduct = async (id: number): Promise<Product | null> => {
+  // Try Supabase directly if configured
+  if (IS_SUPABASE_CONFIGURED && supabase) {
+    try {
+      const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+      if (!error && data) {
+        return {
+          id: data.id,
+          name: data.name,
+          brand: data.brand,
+          category: data.category,
+          price: data.price,
+          originalPrice: data.originalPrice,
+          image: data.image,
+          material: data.material,
+          sizes: data.sizes || [],
+          isHot: !!data.isHot,
+          description: data.description || ''
+        };
+      }
+    } catch (e) {
+      console.log('Supabase fetch failed, trying API...');
+    }
+  }
+
+  // Fallback to API
   try {
     const response = await fetch(`${API_BASE}/api/products/${id}`);
     if (!response.ok) throw new Error('Product not found');
