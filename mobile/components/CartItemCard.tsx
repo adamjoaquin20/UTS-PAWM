@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Product, CartItem } from '@/types';
 import { formatPrice } from '@/lib/api';
 import { Colors, Spacing, BorderRadius, Fonts } from '@/constants/theme';
+import { getImageUrl } from '@/constants/config';
 
 interface CartItemCardProps {
   item: CartItem;
@@ -27,7 +28,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: product.image.startsWith('http') ? product.image : `https://your-backend-url.com/${product.image}` }}
+        source={{ uri: getImageUrl(product.image) }}
         style={styles.image}
         resizeMode="cover"
       />

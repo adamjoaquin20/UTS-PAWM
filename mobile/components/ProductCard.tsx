@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Product } from '@/types';
 import { formatPrice, calculateDiscount } from '@/lib/api';
 import { Colors, Spacing, BorderRadius, Fonts, Shadow } from '@/constants/theme';
+import { getImageUrl } from '@/constants/config';
 
 interface ProductCardProps {
   product: Product;
@@ -29,7 +30,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
       <TouchableOpacity style={styles.card} activeOpacity={0.8}>
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: product.image.startsWith('http') ? product.image : `https://your-backend-url.com/${product.image}` }}
+            source={{ uri: getImageUrl(product.image) }}
             style={styles.image}
             resizeMode="cover"
           />

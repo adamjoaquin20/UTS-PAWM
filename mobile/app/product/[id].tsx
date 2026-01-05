@@ -17,6 +17,7 @@ import { fetchProduct, formatPrice, calculateDiscount } from '@/lib/api';
 import { Button } from '@/components';
 import { Product } from '@/types';
 import { Colors, Spacing, Fonts, BorderRadius, Shadow } from '@/constants/theme';
+import { getImageUrl } from '@/constants/config';
 
 const { width } = Dimensions.get('window');
 
@@ -115,11 +116,7 @@ export default function ProductDetailScreen() {
         {/* Product Image */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ 
-              uri: product.image.startsWith('http') 
-                ? product.image 
-                : `https://your-backend-url.com/${product.image}` 
-            }}
+            source={{ uri: getImageUrl(product.image) }}
             style={styles.image}
             resizeMode="cover"
           />
